@@ -112,6 +112,21 @@ module.exports.updatePost = async (req, res) => {
     }
   };
 
+  module.exports.getMyBlogs = async (req, res) => {
+  try {
+    const myBlogs = await Blog.find({ author: req.user.username });
+
+    if (myBlogs.length > 0) {
+      return res.status(200).json({ myBlogs });
+    } else {
+      return res.status(200).json({ message: 'You have not created any blogs yet.' });
+    }
+  } catch (error) {
+    console.error('Error retrieving user blogs:', error);
+    res.status(500).json({ error: 'Error retrieving user blogs' });
+  }
+};
+
   module.exports.deletePost = async (req, res) => {
     try {
       const { id } = req.params;

@@ -10,6 +10,7 @@ router.get("/getBlogs", blogController.getBlogs);
 router.get("/getBlog/:id", blogController.getBlog);
 router.patch("/updatePost/:id", verify, blogController.updatePost);
 router.delete("/deleteOwnPost/:id", verify, blogController.deleteOwnPost);
+router.get("/getMyBlogs", verify, blogController.getMyBlogs);
 router.delete("/deletePost/:id", verify, verifyAdmin, blogController.deletePost);
 
 
