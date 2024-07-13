@@ -39,33 +39,31 @@ module.exports.registerUser = async (req, res) => {
 };
 
 module.exports.loginUser = async (req, res) => {
-  try {
-    let user;
+    try {
+        let user;
 
-    if (req.body.email.includes('@')) {
-      user = await User.findOne({ email: req.body.email });
-    } else {
-      user = await User.findOne({ username: req.body.email });
+        if (req.body.email.includes('@')) {
+            user = await User.findOne({ email: req.body.email });
+        } else {
+            user = await User.findOne({ username: req.body.email });
+        }
+
+        if (!user) {
+            return res.status(401).json({ error: 'No user found' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Email/username and password do not match' });
+        }
+
+        const accessToken = auth.createAccessToken(user); 
+        res.status(200).json({ accessToken });
+
+    } catch (error) {
+        console.error('Error in finding the user: ', error);
+        res.status(500).json({ error: 'Error in find' });
     }
-
-    if (!user) {
-      return res.status(401).json({ error: 'No user found' });
-    }
-
-    const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Email/username and password do not match' });
-    }
-
-    // Store user ID in session storage (replace with your session library)
-    req.session.userId = user._id;
-
-    const accessToken = auth.createAccessToken(user);
-    res.status(200).json({ accessToken });
-  } catch (error) {
-    console.error('Error in finding the user: ', error);
-    res.status(500).json({ error: 'Error in find' });
-  }
 };
 
 module.exports.userDetails = (req, res) => {
