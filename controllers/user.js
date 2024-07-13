@@ -38,33 +38,28 @@ module.exports.registerUser = async (req, res) => {
     }
 };
 
-module.exports.loginUser = async (req, res) => {
-    try {
-        let user;
-
-        if (req.body.email.includes('@')) {
-            user = await User.findOne({ email: req.body.email });
-        } else {
-            user = await User.findOne({ username: req.body.email });
-        }
-
+module.exports.loginUser = (req, res) => {
+    const searchField = req.body.email.includes('@') ? 'email' : 'username'; // Determine search field
+    const searchValue = req.body.email;
+  
+    return User.findOne({ [searchField]: searchValue }) // Dynamic search based on email/username
+      .then(user => {
         if (!user) {
-            return res.status(401).json({ error: 'No user found' });
+          return res.status(404).send({ error: 'No User Found' }); // User not found
         }
-
-        const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Email/username and password do not match' });
+  
+        const isPasswordCorrect = bcrypt.compareSync(req.body.password, user.password);
+        if (isPasswordCorrect) {
+          return res.status(200).send({ access: auth.createAccessToken(user) }); // Login successful
+        } else {
+          return res.status(401).send({ error: 'Username/Email and password do not match' }); // Invalid credentials
         }
-
-        const accessToken = auth.createAccessToken(user); 
-        res.status(200).json({ accessToken });
-
-    } catch (error) {
-        console.error('Error in finding the user: ', error);
-        res.status(500).json({ error: 'Error in find' });
-    }
-};
+      })
+      .catch(findErr => {
+        console.error('Error in finding the user: ', findErr);
+        return res.status(500).send({ error: 'Error in find' }); // Server error
+      });
+  };
 
 module.exports.userDetails = (req, res) => {
 
