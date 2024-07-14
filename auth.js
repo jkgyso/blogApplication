@@ -22,14 +22,14 @@ module.exports.verify = (req, res, next) => {
 
         jwt.verify(token, secret, function (err, decodedToken) {
             if (err) {
-                console.error('Error verifying token:', err.message);
-                return res.send({
+                return res.status(404)send({
                     auth: "Failed",
                     message: err.message
                 });
             } else {
+                console.log('Result from verify method:');
+                console.log(decodedToken);
                 req.user = decodedToken;
-                console.log("Decoded Token: ", decodedToken);
                 next();
             }
         });
