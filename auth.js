@@ -16,13 +16,13 @@ module.exports.verify = (req, res, next) => {
     let token = req.headers.authorization;
 
     if (typeof token === "undefined") {
-        return res.send({ auth: "Failed. No Token" });
+        return res.status(401).send({ auth: "Failed. No Token" });
     } else {
         token = token.slice(7, token.length);
 
         jwt.verify(token, secret, function (err, decodedToken) {
             if (err) {
-                return res.status(404)send({
+                return res.status(404).send({
                     auth: "Failed",
                     message: err.message
                 });
@@ -40,7 +40,7 @@ module.exports.verifyAdmin = (req, res, next) => {
     if (req.user.isAdmin) {
         next();
     } else {
-        return res.send({
+        return res.statis(403).send({
             auth: false,
             message: 'Action Forbidden',
         });
