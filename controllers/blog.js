@@ -112,9 +112,9 @@ module.exports.updatePost = async (req, res) => {
     }
   };
 
-  module.exports.getMyBlogs = async (req, res) => {
+module.exports.getMyBlogs = async (req, res) => {
   try {
-    const myBlogs = await Blog.find({ author: req.user.username });
+    const myBlogs = await Blog.find({ author: req.user.username }).populate('comments');
 
     if (myBlogs.length > 0) {
       return res.status(200).json({ myBlogs });
