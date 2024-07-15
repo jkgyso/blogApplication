@@ -17,10 +17,14 @@ const blogSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    image: {
+        type: String,
+        required: [true, 'Image is required']
+    },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comment'  
-      }]
+        ref: 'Comment'
+    }]
 });
 
 module.exports = mongoose.model('Blog', blogSchema);
