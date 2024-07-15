@@ -18,8 +18,7 @@ const blogSchema = new mongoose.Schema({
         default: Date.now
     },
     image: {
-        type: String,
-        required: [true, 'Image is required']
+        type: String
     },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
